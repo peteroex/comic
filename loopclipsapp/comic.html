@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ComicVerse - Your Superhero Book Haven</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f0f8ff;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      padding-bottom: 60px;
+      background-image: radial-gradient(circle at 1px 1px, #ddd 1px, transparent 0);
+      background-size: 20px 20px;
+    }
+    h1, h2, h3 {
+      font-family: 'Bangers', cursive;
+      letter-spacing: 1px;
+      text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+    }
+    
+    /* Comic-style elements */
+    .comic-box {
+      border: 3px solid #000;
+      border-radius: 0;
+      box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
+      position: relative;
+    }
+    .comic-box:before {
+      content: "";
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      border: 2px dashed rgba(255,0,0,0.3);
+      pointer-events: none;
+    }
+    .speech-bubble {
+      position: relative;
+      background: #fff;
+      border: 3px solid #000;
+      border-radius: 15px;
+      padding: 15px;
+      margin: 1em 0;
+    }
+    .speech-bubble:after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50px;
+      border-width: 15px 15px 0;
+      border-style: solid;
+      border-color: #fff transparent;
+      display: block;
+      width: 0;
+    }
+    .speech-bubble:before {
+      content: '';
+      position: absolute;
+      bottom: -18px;
+      left: 50px;
+      border-width: 15px 15px 0;
+      border-style: solid;
+      border-color: #000 transparent;
+      display: block;
+      width: 0;
+    }
+    
+    /* Header */
+    .header {
+      background: #ff4d4d;
+      padding: 16px 24px;
+      box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 5px solid #000;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: normal;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      -webkit-text-stroke: 1px #000;
+      text-shadow: 3px 3px 0 #000;
+    }
+    .header-actions {
+      display: flex;
+      gap: 15px;
+    }
+    .header-icon {
+      font-size: 1.5rem;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.3s;
+      background: #000;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+    .header-icon:hover {
+      transform: scale(1.1);
+      background: #333;
+    }
+    
+    /* Main Content */
+    .main-content {
+      padding: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    /* Search and Categories */
+    .search-bar {
+      margin: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .search-container {
+      position: relative;
+      flex-grow: 1;
+      max-width: 500px;
+    }
+    .search-container input {
+      padding: 12px 20px 12px 45px;
+      border: 3px solid #000;
+      border-radius: 0;
+      width: 100%;
+      font-size: 1rem;
+      background: #fff;
+      transition: all 0.3s;
+      font-family: 'Permanent Marker', cursive;
+    }
+    .search-container input:focus {
+      outline: none;
+      box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
+    }
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #000;
+      font-size: 1.2rem;
+    }
+    .categories {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 10px 0;
+      scrollbar-width: none;
+    }
+    .categories::-webkit-scrollbar {
+      display: none;
+    }
+    .category-btn {
+      background-color: #000;
+      color: #fff;
+      border: 3px solid #000;
+      padding: 10px 20px;
+      border-radius: 0;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+      font-size: 0.9rem;
+      font-family: 'Permanent Marker', cursive;
+    }
+    .category-btn:hover, .category-btn.active {
+      background-color: #ff4d4d;
+      transform: translateY(-2px);
+      box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+    }
+    .category-btn.active {
+      background-color: #ff4d4d;
+    }
+    
+    /* Book List */
+    .book-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+    .book-card {
+      background-color: #fff;
+      border-radius: 0;
+      box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
+      overflow: hidden;
+      transition: all 0.3s ease-in-out;
+      cursor: pointer;
+      position: relative;
+      border: 3px solid #000;
+    }
+    .book-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 8px 8px 0px rgba(0,0,0,0.2);
+    }
+    .book-card img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-bottom: 3px solid #000;
+    }
+    .book-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #ff4d4d;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 0;
+      font-size: 0.75rem;
+      font-weight: bold;
+      border: 2px solid #000;
+      font-family: 'Permanent Marker', cursive;
+    }
+    .book-card .card-body {
+      padding: 16px;
+    }
+    .book-card .book-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #000;
+      margin-bottom: 5px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-family: 'Bangers', cursive;
+      letter-spacing: 1px;
+    }
+    .book-card .book-author {
+      font-size: 0.9rem;
+      color: #ff4d4d;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .book-card .book-price {
+      font-size: 1.1rem;
+      color: #0066cc;
+      font-weight: 700;
+      font-family: 'Permanent Marker', cursive;
+    }
+    .book-card .book-rating {
+      color: #ffcc00;
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+    
+ /* Footer Navigation Bar - Comic Style */
+ .footer-nav {
+      background-color: var(--black);
+      display: flex;
+      justify-content: space-around;
+      padding: 15px;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      border-top: 4px solid var(--primary);
+      box-shadow: 0 -3px 0 var(--secondary);
+    }
+
+    .footer-nav a {
+      text-decoration: none;
+      color: var(--white);
+      font-size: 1rem;
+      padding: 8px;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-family: 'Bangers', cursive;
+      letter-spacing: 1px;
+      position: relative;
+    }
+
+    .footer-nav a i {
+      font-size: 1.4rem;
+    }
+
+    .footer-nav a:hover {
+      color: var(--primary);
+      transform: translateY(-5px);
+    }
+
+    .footer-nav a.active {
+      color: var(--primary);
+    }
+    
+    /* Feedback Container */
+    .feedback-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 0;
+      box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
+      max-width: 400px;
+      margin: 20px auto;
+      font-family: 'Roboto', sans-serif;
+      border: 3px solid #000;
+      position: relative;
+    }
+    .feedback-container:before {
+      content: "FEEDBACK";
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      background: #ff4d4d;
+      color: white;
+      padding: 0 10px;
+      font-family: 'Bangers', cursive;
+      font-size: 1rem;
+      border: 2px solid #000;
+    }
+    .feedback-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      font-family: 'Bangers', cursive;
+      letter-spacing: 1px;
+    }
+    .feedback-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .feedback-chip {
+      padding: 10px 16px;
+      background-color: #000;
+      color: white;
+      border: 2px solid #000;
+      border-radius: 0;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      font-family: 'Permanent Marker', cursive;
+    }
+    .feedback-chip:hover,
+    .feedback-chip.selected {
+      background-color: #ff4d4d;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .feedback-text {
+      width: 100%;
+      height: 80px;
+      border: 2px solid #000;
+      border-radius: 0;
+      padding: 10px;
+      font-size: 14px;
+      resize: none;
+      margin-bottom: 15px;
+      font-family: 'Roboto', sans-serif;
+    }
+    .feedback-text:focus {
+      outline: none;
+      box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+    }
+    .feedback-submit {
+      padding: 12px 20px;
+      background: #0066cc;
+      color: #fff;
+      border: 2px solid #000;
+      border-radius: 0;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      font-family: 'Bangers', cursive;
+      letter-spacing: 1px;
+    }
+    .feedback-submit:hover {
+      background: #ff4d4d;
+      transform: translateY(-2px);
+      box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+    }
+    
+    /* Modal Styles */
+    .book-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 30px;
+      width: 80%;
+      max-width: 800px;
+      border-radius: 0;
+      position: relative;
+      animation: modalOpen 0.4s;
+      border: 5px solid #000;
+      box-shadow: 10px 10px 0px rgba(0,0,0,0.3);
+    }
+    @keyframes modalOpen {
+      from {opacity: 0; transform: translateY(-50px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 25px;
+      font-size: 28px;
+      color: #000;
+      cursor: pointer;
+      transition: color 0.3s;
+      background: #ff4d4d;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid #000;
+    }
+    .close-modal:hover {
+      color: #fff;
+      background: #000;
+    }
+    .modal-body {
+      display: flex;
+      gap: 30px;
+    }
+    .modal-image {
+      flex: 1;
+    }
+    .modal-image img {
+      width: 100%;
+      max-height: 500px;
+      object-fit: contain;
+      box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
+      border: 3px solid #000;
+    }
+    .modal-details {
+      flex: 1;
+    }
+    .modal-details h2 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #000;
+      font-family: 'Bangers', cursive;
+      letter-spacing: 1px;
+      -webkit-text-stroke: 1px #000;
+      text-shadow: 3px 3px 0 #ff4d4d;
+    }
+    .modal-details .author {
+      font-size: 1.2rem;
+      color: #ff4d4d;
+      margin-bottom: 20px;
+      font-family: 'Permanent Marker', cursive;
+    }
+    .modal-details .price {
+      font-size: 1.5rem;
+      color: #0066cc;
+      font-weight: bold;
+      margin: 20px 0;
+      font-family: 'Permanent Marker', cursive;
+    }
+    .modal-details .description {
+      line-height: 1.6;
+      margin-bottom: 25px;
+      border-top: 2px dashed #000;
+      border-bottom: 2px dashed #000;
+      padding: 10px 0;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    .modal-actions button {
+      padding: 12px 20px;
+      border: 3px solid #000;
+      border-radius: 0;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+      font-family: 'Bangers', cursive;
+      letter-spacing: 1px;
+    }
+    .add-to-cart {
+      background-color: #0066cc;
+      color: white;
+    }
+    .add-to-cart:hover {
+      background-color: #004d99;
+      transform: translateY(-2px);
+      box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+    }
+    .add-to-favorites {
+      background-color: #ffcc00;
+      color: #000;
+    }
+    .add-to-favorites:hover {
+      background-color: #e6b800;
+      transform: translateY(-2px);
+      box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+    }
+    
+    /* POW Effect */
+    .pow {
+      position: relative;
+    }
+    .pow:after {
+      content: "POW!";
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      font-family: 'Bangers', cursive;
+      color: #ff4d4d;
+      font-size: 2rem;
+      transform: rotate(15deg);
+      -webkit-text-stroke: 2px #000;
+      text-shadow: 3px 3px 0 #000;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .pow:hover:after {
+      opacity: 1;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+      .book-list {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      }
+      .book-card img {
+        height: 240px;
+      }
+      .modal-body {
+        flex-direction: column;
+      }
+      .modal-content {
+        width: 90%;
+        margin: 10% auto;
+        padding: 20px;
+      }
+      .modal-image img {
+        max-height: 350px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .header {
+        padding: 12px 16px;
+      }
+      .header h1 {
+        font-size: 1.8rem;
+      }
+      .header-icon {
+        font-size: 1.3rem;
+        width: 35px;
+        height: 35px;
+      }
+      .book-list {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+      }
+      .book-card img {
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header class="header">
+    <h1><i class="fas fa-book-open"></i> COMICVERSE</h1>
+    <div class="header-actions">
+      <i class="fas fa-search header-icon"></i>
+      <i class="fas fa-user header-icon"></i>
+      <i class="fas fa-shopping-cart header-icon"></i>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Search and Categories -->
+    <div class="search-bar">
+      <h2 class="text-3xl pow">EXPLORE OUR COLLECTION!</h2>
+      <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" placeholder="SEARCH FOR COMICS...">
+      </div>
+    </div>
+
+    <div class="categories">
+      <button class="category-btn active">ALL</button>
+      <button class="category-btn">SUPERHERO</button>
+      <button class="category-btn">MANGA</button>
+      <button class="category-btn">GRAPHIC NOVEL</button>
+      <button class="category-btn">DC</button>
+      <button class="category-btn">MARVEL</button>
+      <button class="category-btn">INDIE</button>
+      <button class="category-btn">CLASSICS</button>
+    </div>
+
+    <!-- Book List -->
+    <div class="book-list">
+      <div class="book-card">
+        <span class="book-badge">NEW!</span>
+        <img src="https://m.media-amazon.com/images/I/91K5Z+3gYJL._AC_UF1000,1000_QL80_.jpg" alt="Batman: The Dark Knight Returns">
+        <div class="card-body">
+          <h3 class="book-title">BATMAN: THE DARK KNIGHT RETURNS</h3>
+          <p class="book-author">FRANK MILLER</p>
+          <div class="book-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star-half-alt"></i>
+            <span> (4.7)</span>
+          </div>
+          <p class="book-price">$19.99</p>
+        </div>
+      </div>
+      <div class="book-card">
+        <img src="https://m.media-amazon.com/images/I/91KcsC+nOLL._AC_UF1000,1000_QL80_.jpg" alt="Watchmen">
+        <div class="card-body">
+          <h3 class="book-title">WATCHMEN</h3>
+          <p class="book-author">ALAN MOORE</p>
+          <div class="book-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <span> (5.0)</span>
+          </div>
+          <p class="book-price">$24.99</p>
+        </div>
+      </div>
+      <div class="book-card">
+        <span class="book-badge">BESTSELLER</span>
+        <img src="https://m.media-amazon.com/images/I/91K5Z+3gYJL._AC_UF1000,1000_QL80_.jpg" alt="Spider-Man: Blue">
+        <div class="card-body">
+          <h3 class="book-title">SPIDER-MAN: BLUE</h3>
+          <p class="book-author">JEPH LOEB</p>
+          <div class="book-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+            <span> (4.2)</span>
+          </div>
+          <p class="book-price">$17.99</p>
+        </div>
+      </div>
+      <div class="book-card">
+        <img src="https://m.media-amazon.com/images/I/91K5Z+3gYJL._AC_UF1000,1000_QL80_.jpg" alt="Saga Vol. 1">
+        <div class="card-body">
+          <h3 class="book-title">SAGA VOL. 1</h3>
+          <p class="book-author">BRIAN K. VAUGHAN</p>
+          <div class="book-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star-half-alt"></i>
+            <span> (4.6)</span>
+          </div>
+          <p class="book-price">$14.99</p>
+        </div>
+      </div>
+      <div class="book-card">
+        <span class="book-badge">CLASSIC</span>
+        <img src="https://m.media-amazon.com/images/I/91K5Z+3gYJL._AC_UF1000,1000_QL80_.jpg" alt="Maus">
+        <div class="card-body">
+          <h3 class="book-title">MAUS</h3>
+          <p class="book-author">ART SPIEGELMAN</p>
+          <div class="book-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <span> (5.0)</span>
+          </div>
+          <p class="book-price">$22.99</p>
+        </div>
+      </div>
+      <div class="book-card">
+        <img src="https://m.media-amazon.com/images/I/91K5Z+3gYJL._AC_UF1000,1000_QL80_.jpg" alt="One Piece Vol. 1">
+        <div class="card-body">
+          <h3 class="book-title">ONE PIECE VOL. 1</h3>
+          <p class="book-author">EIICHIRO ODA</p>
+          <div class="book-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+            <span> (4.1)</span>
+          </div>
+          <p class="book-price">$9.99</p>
+        </div>
+      </div>
+      <div class="book-card">
+        <span class="book-badge">HOT</span>
+        <img src="https://m.media-amazon.com/images/I/91K5Z+3gYJL._AC_UF1000,1000_QL80_.jpg" alt="Invincible Vol. 1">
+        <div class="card-body">
+          <h3 class="book-title">INVINCIBLE VOL. 1</h3>
+          <p class="book-author">ROBERT KIRKMAN</p>
+          <div class="book-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star-half-alt"></i>
+            <span> (4.5)</span>
+          </div>
+          <p class="book-price">$12.99</p>
+        </div>
+      </div>
+      <div class="book-card">
+        <img src="https://m.media-amazon.com/images/I/91K5Z+3gYJL._AC_UF1000,1000_QL80_.jpg" alt="The Walking Dead Vol. 1">
+        <div class="card-body">
+          <h3 class="book-title">THE WALKING DEAD VOL. 1</h3>
+          <p class="book-author">ROBERT KIRKMAN</p>
+          <div class="book-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+            <span> (4.0)</span>
+          </div>
+          <p class="book-price">$14.99</p>
+        </div>
+      </div>
+      <div class="book-card">
+        <span class="book-badge">LIMITED</span>
+        <img src="https://m.media-amazon.com/images/I/91K5Z+3gYJL._AC_UF1000,1000_QL80_.jpg" alt="X-Men: Days of Future Past">
+        <div class="card-body">
+          <h3 class="book-title">X-MEN: DAYS OF FUTURE PAST</h3>
+          <p class="book-author">CHRIS CLAREMONT</p>
+          <div class="book-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <span> (5.0)</span>
+          </div>
+          <p class="book-price">$29.99</p>
+        </div>
+      </div>
+      <div class="book-card">
+        <img src="https://m.media-amazon.com/images/I/91K5Z+3gYJL._AC_UF1000,1000_QL80_.jpg" alt="Batman: Year One">
+        <div class="card-body">
+          <h3 class="book-title">BATMAN: YEAR ONE</h3>
+          <p class="book-author">FRANK MILLER</p>
+          <div class="book-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star-half-alt"></i>
+            <span> (4.7)</span>
+          </div>
+          <p class="book-price">$17.99</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Book Modal -->
+  <div class="book-modal" id="bookModal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <div class="modal-body">
+        <div class="modal-image">
+          <img id="modalBookImage" src="https://m.media-amazon.com/images/I/91K5Z+3gYJL._AC_UF1000,1000_QL80_.jpg" alt="Book Cover">
+        </div>
+        <div class="modal-details">
+          <h2 id="modalBookTitle">BATMAN: THE DARK KNIGHT RETURNS</h2>
+          <p class="author" id="modalBookAuthor">FRANK MILLER</p>
+          <div class="rating" id="modalBookRating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star-half-alt"></i>
+            <span> (4.7)</span>
+          </div>
+          <p class="price" id="modalBookPrice">$19.99</p>
+          <p class="description" id="modalBookDescription">
+            In a dystopian future, a 55-year-old Bruce Wayne returns as Batman to save Gotham from a gang of mutants. 
+            This groundbreaking graphic novel redefined superhero comics with its gritty tone and complex themes. 
+            "The Dark Knight Returns" is considered one of the greatest Batman stories ever told!
+          </p>
+          <div class="modal-actions">
+            <button class="add-to-cart">ADD TO CART <i class="fas fa-bolt"></i></button>
+            <button class="add-to-favorites">
+              <i class="fas fa-heart"></i> WISHLIST
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback Container -->
+  <div class="feedback-container">
+    <h3 class="feedback-title">WHAT DID YOU THINK?</h3>
+    <div class="feedback-options">
+      <button class="feedback-chip">🤩 AWESOME!</button>
+      <button class="feedback-chip">👍 COOL</button>
+      <button class="feedback-chip">😐 MEH</button>
+      <button class="feedback-chip">👎 NOT MY STYLE</button>
+    </div>
+    <textarea class="feedback-text" placeholder="WANT TO SAY MORE? (OPTIONAL)"></textarea>
+    <button class="feedback-submit">SEND FEEDBACK <i class="fas fa-paper-plane"></i></button>
+  </div>
+
+  <!-- Footer Navigation -->
+  <div class="footer-nav">
+    <a href="index.html" class="active">
+      <i class="fas fa-home"></i>
+      <span>HOME BASE</span>
+    </a>
+    <a href="search.html">
+      <i class="fas fa-search"></i>
+      <span>MISSION LOG</span>
+    </a>
+    <a href="lib.html">
+      <i class="fas fa-book"></i>
+      <span>ARCHIVES</span>
+    </a>
+    <a href="profile.html">
+      <i class="fas fa-user-secret"></i>
+      <span>SECRET ID</span>
+    </a>
+  </div>
+  <script>
+    // Simple modal toggle functionality
+    document.querySelectorAll('.book-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.getElementById('bookModal').style.display = 'block';
+      });
+    });
+
+    document.querySelector('.close-modal').addEventListener('click', () => {
+      document.getElementById('bookModal').style.display = 'none';
+    });
+
+    // Category button active state
+    document.querySelectorAll('.category-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelector('.category-btn.active').classList.remove('active');
+        btn.classList.add('active');
+      });
+    });
+
+    // Feedback chip selection
+    document.querySelectorAll('.feedback-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.feedback-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+      });
+    });
+
+    // Submit feedback
+    document.querySelector('.feedback-submit').addEventListener('click', () => {
+      alert('THANKS FOR YOUR FEEDBACK, TRUE BELIEVER!');
+      document.querySelector('.feedback-text').value = '';
+      document.querySelectorAll('.feedback-chip').forEach(c => c.classList.remove('selected'));
+    });
+  </script>
+</body>
+</html>
